@@ -1,3 +1,3 @@
 
 
-export const lib1 = {aa: aa}
+export const lib1 = {aa: 11}
