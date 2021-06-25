@@ -1,0 +1,12 @@
+{
+  "name": "tools-node",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "Andy",
+  "license": "ISC"
+}
