@@ -1,5 +1,5 @@
-import file from './file.js' 
+const file = require('./file.js')
 
-export default {
+module.exports = {
 	file
 }

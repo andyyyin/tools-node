@@ -1,4 +1,4 @@
-import fs from 'fs'
+const fs = require('fs')
 
 const readFile = (path) => {
 	return new Promise(resolve => {
@@ -116,7 +116,7 @@ const isDirectory = (path) => {
 	})
 }
 
-export default {
+module.exports = {
 	readFile,
 	readJSON,
 	writeFile,
