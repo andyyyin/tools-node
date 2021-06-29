@@ -1,4 +1,4 @@
-const fs = require("fs")
+import fs from 'fs'
 
 const readFile = (path) => {
 	return new Promise(resolve => {
