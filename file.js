@@ -20,11 +20,11 @@ const readJSON = (path) => {
 			} catch (e) {
 				reject(e)
 			}
-		})
+		}, e => reject(e))
 	})
 }
 
-const writeFile = (path, content) => {
+const writeJSON = (path, content) => {
 	return new Promise((resolve, reject) => {
 		if (typeof content !== 'string') content = JSON.stringify(content)
 		fs.writeFile(path, content, 'utf8', (err) => {
@@ -124,7 +124,7 @@ const isDirectory = (path) => {
 module.exports = {
 	readFile,
 	readJSON,
-	writeFile,
+	writeJSON,
 	readOrInitJSON,
 	readDir,
 	makeDir,
