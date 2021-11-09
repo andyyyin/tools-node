@@ -1,11 +1,10 @@
 const fs = require('fs')
 
 const readFile = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		fs.readFile(path, (err, data) => {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
 			} else {
 				resolve(data)
 			}
@@ -14,104 +13,110 @@ const readFile = (path) => {
 }
 
 const readJSON = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		readFile(path).then(data => {
 			try {
 				resolve(JSON.parse(data))
 			} catch (e) {
-				console.error(e)
+				reject(e)
 			}
 		})
 	})
 }
 
 const writeFile = (path, content) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		if (typeof content !== 'string') content = JSON.stringify(content)
 		fs.writeFile(path, content, 'utf8', (err) => {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
+			} else {
+				resolve(true)
 			}
-			resolve(true)
 		})
 	})
 }
 
-const readOrInitFile = (path) => {
-	return new Promise(resolve => {
+const readOrInitJSON = (path) => {
+	return new Promise((resolve, reject) => {
 		let initContent = '{}'
 		fs.readFile(path, 'utf8', (err, data) => {
 			if (!err) {
 				if (!data) data = initContent
-				resolve(JSON.parse(data))
+				try {
+					resolve(JSON.parse(data))
+				} catch (e) {
+					reject(e)
+				}
 			} else if (err.code === 'ENOENT') {
 				fs.writeFile(path, initContent, (err) => {
-					if (err) console.error(err)
-					resolve({})
+					if (err) {
+						reject(err)
+					} else {
+						resolve({})
+					}
 				})
 			} else {
-				console.error(err)
-				resolve(false)
+				reject(err)
 			}
 		})
 	})
 }
 
 const readDir = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		fs.readdir(path, function (err, files) {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
+			} else {
+				resolve(files)
 			}
-			resolve(files)
 		})
 	})
 }
 
 const makeDir = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		if (fs.existsSync(path)) {
 			resolve(true)
 			return
 		}
 		fs.mkdir(path, { recursive: true }, (err) => {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
+			} else {
+				resolve(true)
 			}
-			resolve(true)
 		});
 	})
 }
 
 const exist = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		resolve(fs.existsSync(path))
 	})
 }
 
 const copyFile = (src, target) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		fs.copyFile(src, target, err => {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
+			} else {
+				resolve(true)
 			}
-			resolve(true)
 		})
 	})
 }
 
 const isDirectory = (path) => {
-	return new Promise(resolve => {
+	return new Promise((resolve, reject) => {
 		fs.stat(path, (err, stat) => {
 			if (err) {
-				console.error(err)
-				resolve(false)
+				reject(err)
+			} else {
+				resolve(stat.isDirectory())
 			}
-			resolve(stat.isDirectory())
 		})
 	})
 }
@@ -120,7 +125,7 @@ module.exports = {
 	readFile,
 	readJSON,
 	writeFile,
-	readOrInitFile,
+	readOrInitJSON,
 	readDir,
 	makeDir,
 	exist,
