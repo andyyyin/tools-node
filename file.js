@@ -37,30 +37,22 @@ const writeJSON = (path, content) => {
 	})
 }
 
-const readOrInitJSON = (path) => {
-	return new Promise((resolve, reject) => {
-		let initContent = '{}'
-		fs.readFile(path, 'utf8', (err, data) => {
-			if (!err) {
-				if (!data) data = initContent
-				try {
-					resolve(JSON.parse(data))
-				} catch (e) {
-					reject(e)
-				}
-			} else if (err.code === 'ENOENT') {
-				fs.writeFile(path, initContent, (err) => {
-					if (err) {
-						reject(err)
-					} else {
-						resolve({})
-					}
-				})
-			} else {
-				reject(err)
-			}
-		})
-	})
+const initJSON = async (path, initContent) => {
+	initContent = initContent || '{}'
+	await makeDir(getDirPathFromFile(path))
+	await writeJSON(path, initContent)
+}
+
+const readOrInitJSON = async (path, initContent) => {
+	try {
+		await readJSON(path)
+	} catch (e) {
+		if (e.code === 'ENOENT') {
+			await initJSON(path, initContent)
+		} else {
+			throw e
+		}
+	}
 }
 
 const readDir = (path) => {
@@ -121,6 +113,12 @@ const isDirectory = (path) => {
 	})
 }
 
+const getDirPathFromFile = (filePath) => {
+	let pathGroup = filePath.split(/[/|\\]/)
+	pathGroup.pop()
+	return pathGroup.join('/')
+}
+
 module.exports = {
 	readFile,
 	readJSON,
@@ -130,5 +128,7 @@ module.exports = {
 	makeDir,
 	exist,
 	copyFile,
-	isDirectory
+	isDirectory,
+	getDirPathFromFile,
+	initJSON,
 }
