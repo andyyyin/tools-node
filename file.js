@@ -128,6 +128,7 @@ const getDirPathFromFile = (filePath) => {
 module.exports = {
 	readFile,
 	readJSON,
+	writeFile,
 	writeJSON,
 	readOrInitJSON,
 	readDir,
