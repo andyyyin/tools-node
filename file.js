@@ -20,13 +20,12 @@ const readJSON = (path) => {
 			} catch (e) {
 				reject(e)
 			}
-		}, e => reject(e))
+		}, reject)
 	})
 }
 
-const writeJSON = (path, content) => {
+const writeFile = (path, content) => {
 	return new Promise((resolve, reject) => {
-		if (typeof content !== 'string') content = JSON.stringify(content)
 		fs.writeFile(path, content, 'utf8', (err) => {
 			if (err) {
 				reject(err)
@@ -34,6 +33,13 @@ const writeJSON = (path, content) => {
 				resolve(true)
 			}
 		})
+	})
+}
+
+const writeJSON = (path, content) => {
+	return new Promise((resolve, reject) => {
+		if (typeof content !== 'string') content = JSON.stringify(content)
+		writeFile(path, content).then(resolve, reject)
 	})
 }
 
@@ -45,7 +51,7 @@ const initJSON = async (path, initContent) => {
 
 const readOrInitJSON = async (path, initContent) => {
 	try {
-		await readJSON(path)
+		return await readJSON(path)
 	} catch (e) {
 		if (e.code === 'ENOENT') {
 			await initJSON(path, initContent)
