@@ -6,7 +6,7 @@ const readFile = (path) => {
 			if (err) {
 				reject(err)
 			} else {
-				resolve(data)
+				resolve(data && data.toString())
 			}
 		})
 	})
