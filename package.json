@@ -1,11 +1,13 @@
 {
-  "name": "tools-node",
-  "version": "0.0.4",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-  },
-  "keywords": [],
-  "author": "Andy",
-  "license": "ISC"
+	"name": "tools-node",
+	"version": "0.0.4",
+	"description": "",
+	"main": "main.js",
+	"scripts": {},
+	"keywords": [],
+	"author": "Andy",
+	"license": "ISC",
+	"dependencies": {
+		"mongodb": "^4.8.1"
+	}
 }
