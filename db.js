@@ -2,13 +2,18 @@ const {MongoClient, Long} = require('mongodb');
 
 const INT32_MAX = 2147483647
 
-let client, db
+let client, db, isConnected
 
 const connect = (dbUrl) => {
+	if (client && isConnected) {
+		console.log("already connected");
+		return
+	}
 	client = new MongoClient(dbUrl);
 	return new Promise((resolve, reject) => {
 		client.connect(function(err) {
 			if (err) { reject(err); return }
+			isConnected = true
 			console.log("connected successfully to data base");
 			resolve()
 		});
