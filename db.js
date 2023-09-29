@@ -77,12 +77,12 @@ const getData = (query, colName, dbName) => {
 	})
 }
 
-const getLimitData = (query, limit, colName, dbName) => {
+const getLimitData = (query, options, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		query = query || {}
 		const buildQuery = buildForSave(query)
-		Promise.all([col.countDocuments(buildQuery), col.find(buildQuery).limit(limit).toArray()])
+		Promise.all([col.countDocuments(buildQuery), col.find(buildQuery, options).toArray()])
 			.then(([count, list]) => {
 				restoreData(query)
 				resolve({count, list})
