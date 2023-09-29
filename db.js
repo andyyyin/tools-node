@@ -11,7 +11,7 @@ const connect = (dbUrl) => {
 	}
 	client = new MongoClient(dbUrl);
 	return new Promise((resolve, reject) => {
-		client.connect().then(function(err) {
+		client.connect().then(function() {
 			isConnected = true
 			console.log("connected successfully to data base");
 			resolve()
@@ -25,7 +25,7 @@ const connect = (dbUrl) => {
 const buildForSave = (data) => {
 	const fun = (obj, key) => {
 		if (typeof obj[key] === 'number' && obj[key] > INT32_MAX) {
-			obj[key] = Long(obj[key] + '')
+			obj[key] = new Long(obj[key] + '')
 		}
 	}
 	return dataFilter(data, fun)
