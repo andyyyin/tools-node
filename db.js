@@ -11,12 +11,14 @@ const connect = (dbUrl) => {
 	}
 	client = new MongoClient(dbUrl);
 	return new Promise((resolve, reject) => {
-		client.connect(function(err) {
-			if (err) { reject(err); return }
+		client.connect().then(function(err) {
 			isConnected = true
 			console.log("connected successfully to data base");
 			resolve()
-		});
+		}).catch(e => {
+			client.close()
+			reject(e)
+		})
 	})
 }
 
@@ -68,21 +70,32 @@ const getData = (query, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		query = query || {}
-		col.find(buildForSave(query)).toArray(function(err, result) {
+		col.find(buildForSave(query)).toArray().then(function(result) {
 			restoreData(query)
-			if (err) { reject(err); return }
 			resolve(result)
-		});
+		}).catch(reject)
+	})
+}
+
+const getLimitData = (query, limit, colName, dbName) => {
+	return new Promise((resolve, reject) => {
+		const col = getDB(dbName).collection(colName)
+		query = query || {}
+		const buildQuery = buildForSave(query)
+		Promise.all([col.countDocuments(buildQuery), col.find(buildQuery).limit(limit).toArray()])
+			.then(([count, list]) => {
+				restoreData(query)
+				resolve({count, list})
+			}).catch(reject)
 	})
 }
 
 const getDistinctField = (key, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
-		col.distinct(key, function(err, result) {
-			if (err) { reject(err); return }
+		col.distinct(key).then(function(result) {
 			resolve(result)
-		});
+		}).catch(reject);
 	})
 }
 
@@ -90,11 +103,10 @@ const getOne = (query, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		query = query || {}
-		col.findOne(buildForSave(query), {}, function(err, result) {
+		col.findOne(buildForSave(query), {}).then(function(result) {
 			restoreData(query)
-			if (err) { reject(err); return }
 			resolve(result)
-		});
+		}).catch(reject)
 	})
 }
 
@@ -102,11 +114,10 @@ const getLastOne = (query, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		query = query || {}
-		col.findOne(buildForSave(query), {sort: [['_id', -1]]}, (err, result) => {
+		col.findOne(buildForSave(query), {sort: [['_id', -1]]}).then((result) => {
 			restoreData(query)
-			if (err) { reject(err); return }
 			resolve(result)
-		})
+		}).catch(reject)
 	})
 }
 
@@ -116,11 +127,10 @@ const insertData = (data, colName, dbName) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		let array = Array.isArray(data) ? data : [data];
-		col.insertMany(buildForSave(array), function(err, result) {
+		col.insertMany(buildForSave(array)).then(function(result) {
 			restoreData(array)
-			if (err) { reject(err); return }
 			resolve(result)
-		});
+		}).catch(reject)
 	})
 }
 
@@ -129,12 +139,11 @@ const updateOne = (query, set, colName, dbName, options) => {
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
 		let updateContent = set['$set'] ? set : { $set: set }
-		col.updateOne(buildForSave(query), buildForSave(updateContent), options, function(err, result) {
+		col.updateOne(buildForSave(query), buildForSave(updateContent), options).then(function(result) {
 			restoreData(query)
 			restoreData(updateContent)
-			if (err) { reject(err); return }
 			resolve(result);
-		});
+		}).catch(reject)
 	})
 }
 const upsertOne = (query, set, colName, dbName) => {
@@ -151,4 +160,5 @@ module.exports = {
 	upsertOne,
 	getLastOne,
 	getDistinctField,
+	getLimitData,
 }

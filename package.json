@@ -8,6 +8,6 @@
 	"author": "Andy",
 	"license": "ISC",
 	"dependencies": {
-		"mongodb": "^4.8.1"
+		"mongodb": "^6.1.0"
 	}
 }
