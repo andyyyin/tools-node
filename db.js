@@ -138,7 +138,7 @@ const updateOne = (query, set, colName, dbName, options) => {
 
 	return new Promise((resolve, reject) => {
 		const col = getDB(dbName).collection(colName)
-		let updateContent = set['$set'] ? set : { $set: set }
+		let updateContent = set.$set || set.$push ? set : { $set: set }
 		col.updateOne(buildForSave(query), buildForSave(updateContent), options).then(function(result) {
 			restoreData(query)
 			restoreData(updateContent)
