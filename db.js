@@ -150,6 +150,17 @@ const upsertOne = (query, set, colName, dbName) => {
 	return updateOne(query, set, colName, dbName, {upsert: true})
 }
 
+const deleteData = (query, colName, dbName) => {
+	return new Promise((resolve, reject) => {
+		const col = getDB(dbName).collection(colName)
+		query = query || {}
+		col.deleteMany(buildForSave(query)).then(function(result) {
+			restoreData(query)
+			resolve(result)
+		}).catch(reject)
+	})
+}
+
 
 module.exports = {
 	connect,
@@ -158,6 +169,7 @@ module.exports = {
 	insertData,
 	updateOne,
 	upsertOne,
+	deleteData,
 	getLastOne,
 	getDistinctField,
 	getLimitData,
